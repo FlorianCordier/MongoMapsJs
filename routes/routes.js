@@ -1,8 +1,8 @@
 module.exports = function(app){
 
     app.get('/', (req, res) => {
-        res.render('example.twig', {
-            message : 'Hello world!'
+        res.render('maps.twig', {
+            message : 'Google maps!'
         });
     });
 

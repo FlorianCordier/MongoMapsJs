@@ -14,31 +14,32 @@ if(config.app.mode == 'dev'){
     twig.cache(false);
 }
 
+
 //MONGODB DATABASE
 
-//Create database (named 'mydb')
-let url = "mongodb://localhost:27017/mydb";
-mongoose.connect(url, function(err, db) {
-    if (err) throw err;
-    console.log("Database " + "mydb" + " created!");
-    db.close();
-});
+// //Create database (named 'mydb')
+// let url = "mongodb://localhost:27017/mydb";
+// mongoose.connect(url, function(err, db) {
+//     if (err) throw err;
+//     console.log("Database " + "mydb" + " created!");
+//     db.close();
+// });
 
-//Insert
-let kittySchema = new mongoose.Schema({
-    name: String,
-    age: Number
-});
+// //Insert
+// let kittySchema = new mongoose.Schema({
+//     name: String,
+//     age: Number
+// });
 
-let Kitten = mongoose.model('Kitten', kittySchema);
+// let Kitten = mongoose.model('Kitten', kittySchema);
 
-let kittyLeon = new Kitten({
-    name: "Léon",
-    age: 19
-});
-console.log(kittyLeon.name + "  " + kittyLeon.age);
+// let kittyLeon = new Kitten({
+//     name: "Léon",
+//     age: 19
+// });
+// console.log(kittyLeon.name + "  " + kittyLeon.age);
 
-kittyLeon.save();
+// kittyLeon.save();
 
 
 //ROUTES
