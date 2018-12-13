@@ -4,7 +4,8 @@ let app      = express();
 let server   = require('http').createServer(app);
 let twig     = require('twig');
 let mongoose = require('mongoose');
-
+var getJSON = require('get-json');
+let url = "mongodb://localhost:27017/nancydb";
 
 //CONFIGURATIONS
 app.set('views', __dirname + '/ressources/views');
@@ -14,38 +15,78 @@ if(config.app.mode == 'dev'){
     twig.cache(false);
 }
 
-
 //MONGODB DATABASE
+let parkingSchema = new mongoose.Schema({
+    name: String,
+    address: String,
+    places: Number,
+    capacity: Number,
+    x: Number,
+    y: Number,
+    type: String
+});
 
-// //Create database (named 'mydb')
-// let url = "mongodb://localhost:27017/mydb";
-// mongoose.connect(url, function(err, db) {
-//     if (err) throw err;
-//     console.log("Database " + "mydb" + " created!");
-//     db.close();
-// });
+let Parking = mongoose.model('Parking', parkingSchema);
 
-// //Insert
-// let kittySchema = new mongoose.Schema({
-//     name: String,
-//     age: Number
-// });
+//Get parking data and save
+getJSON('https://geoservices.grand-nancy.org/arcgis/rest/services/public/VOIRIE_Parking/MapServer/0/query?where=1%3D1&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=nom%2Cadresse%2Cplaces%2Ccapacite&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=4326&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentsOnly=false&datumTransformation=&parameterValues=&rangeValues=&f=pjson', function(error, response){
+    
+    //Create database (named 'nancydb')
+    mongoose.connect(url, { useNewUrlParser: true }, function(err, db) {
+        if (err) throw err;
+        console.log("Database nancydb created!");
 
-// let Kitten = mongoose.model('Kitten', kittySchema);
+        //Delete all previously data if exist
+        Parking.deleteMany({}, function(err){
+            if (err) return handleError(err);
+        });
 
-// let kittyLeon = new Kitten({
-//     name: "Léon",
-//     age: 19
-// });
-// console.log(kittyLeon.name + "  " + kittyLeon.age);
+        // Inserting all data
+        // console.log(response.features.length);
+        let i = 0;
+        for(i; i<response.features.length; i++){
+            let park = new Parking({
+                name: response.features[i].attributes.NOM,
+                address: response.features[i].attributes.ADRESSE,
+                places: response.features[i].attributes.PLACES,
+                capacity: response.features[i].attributes.CAPACITE,
+                x: response.features[i].geometry.x,
+                y: response.features[i].geometry.y,
+                type: 'parking'
+            });
 
-// kittyLeon.save();
-
+            park.save();
+            // console.log(response.features[i].attributes.NOM);
+        }
+    });
+});
 
 //ROUTES
 app.use(express.static(__dirname + '/public'));
-require('./routes/routes')(app);
 
+app.get('/', (req, res) => {
+    res.render('maps.twig', {
+        message : 'Google maps : Nancy informations'
+    });
+});
+
+//Get data from database
+app.get('/data/markers', (req, res) => {
+    // res.send(data);
+    mongoose.connect(url, function(err, db) {
+        if (err) throw err;
+        Parking.find(function(err, data){
+            if (err) return console.error(err);
+            console.log("Get : " + data.length + " parking.");
+            res.send(data);
+        });
+    });
+});
+
+app.use(function(req, res, next){
+    res.status(404);
+    res.type('txt').send('404 - Not found');
+});
 
 server.listen(config.app.port, () => {
     console.log(`Server run on port ${config.app.port}`);
