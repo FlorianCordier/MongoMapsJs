@@ -9,13 +9,23 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </head>
 <body>
-    <h1 class="title">{{ message }}</h1>
+    <h1 class="title">Google maps : Nancy informations | CORDIER Florian et ROHRBACHER Léon</h1>
     <div class="informations">
-        <p class="informations textInfo">Les points verts de la carte représentent les parkings de Nancy. En cliquant desssus, vous obtiendrez les informations relatives à ce parking.</p>
+        <p class="informations textInfo">Les points verts de la carte représentent les parkings de Nancy. Les bleus les points personnalisés.<br/> En cliquant dessus, vous obtiendrez les informations relatives à ce parking.</p>
     </div>
     <div id="map"></div>
 
-    <div class="footer">CORDIER Florian et ROHRBACHER Léon</div>
+    <div class="addPoint">
+    <h2>Ajouter un point :</h2>
+        <form action="/addPoint" method="POST">
+            <input type="number" step=any name="pointPositionLat" placeholder="Latitude du point" required/>
+            <input type="number" step=any name="pointPositionLng" placeholder="Longitude du point" required/>
+            <input type="text" name="pointName" placeholder="Nom du point" required/>
+            <input type="text" name="pointAddress" placeholder="Adresse du point" required/>
+            <input class="buttonNew" type="submit" value="Cliquer ici pour ajouter un point"/>
+            <p><b>Exemple :</b> Lat: 48.6828361  Lng : 6.161133999999947  Nom : IUT NC  Adresse : 2Ter Boulevard Charlemagne, 54000 Nancy, France</p>
+        </form> 
+    </div>
 
     <script>
     let map;
@@ -29,21 +39,29 @@
         $.get("/data/markers", function(data){
             //Creating markers for parking
             data.forEach(function(element) {
-                let infowindow = new google.maps.InfoWindow({
-                    content: "<h1>" + element.name + "</h1><b>Adresse : </b>" + element.address
-                    + "<br/><b>Capacité totale : </b>" + element.capacity + "<br/><b>Places disponibles : </b>" + element.places
-                });
+                let markerIcon = "http://maps.google.com/mapfiles/ms/icons/green-dot.png";
+                let infoWindow;
 
+                if(element.type == "customPlace"){
+                    markerIcon = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
+                    infowindow = new google.maps.InfoWindow({
+                        content: "<h1>" + element.name + "</h1><b>Adresse : </b>" + element.address
+                        + "<br/><b>Point personnalisé.</b>"
+                    });
+                }else{
+                    infowindow = new google.maps.InfoWindow({
+                        content: "<h1>" + element.name + "</h1><b>Adresse : </b>" + element.address
+                        + "<br/><b>Capacité totale : </b>" + element.capacity + "<br/><b>Places disponibles : </b>" + element.places
+                    });
+                }
+                
+                console.log(markerIcon);
                 let marker = new google.maps.Marker({
                     position: {lat:element.y, lng:element.x},
                     map: map,
+                    icon : markerIcon,
                     title: element.name
                 });
-
-                //Green icon for parking
-                if(element.type == "parking"){
-                    marker.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png');
-                }
 
                 marker.addListener('click', function() {
                     if(activeInfo){

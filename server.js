@@ -4,7 +4,10 @@ let app      = express();
 let server   = require('http').createServer(app);
 let twig     = require('twig');
 let mongoose = require('mongoose');
-var getJSON = require('get-json');
+let getJSON = require('get-json');
+let bodyParser = require("body-parser");
+let sanitize = require('mongo-sanitize');
+app.use(bodyParser.urlencoded({ extended: false }));
 let url = "mongodb://localhost:27017/nancydb";
 
 //CONFIGURATIONS
@@ -65,15 +68,12 @@ getJSON('https://geoservices.grand-nancy.org/arcgis/rest/services/public/VOIRIE_
 app.use(express.static(__dirname + '/public'));
 
 app.get('/', (req, res) => {
-    res.render('maps.twig', {
-        message : 'Google maps : Nancy informations'
-    });
+    res.render('maps.twig');
 });
 
 //Get data from database
 app.get('/data/markers', (req, res) => {
-    // res.send(data);
-    mongoose.connect(url, function(err, db) {
+    mongoose.connect(url, { useNewUrlParser: true }, function(err, db) {
         if (err) throw err;
         Parking.find(function(err, data){
             if (err) return console.error(err);
@@ -81,6 +81,33 @@ app.get('/data/markers', (req, res) => {
             res.send(data);
         });
     });
+});
+
+//Adding a new point
+app.post('/addPoint', (req, res) => {
+    //Test all data with sanitize
+    let pLat = sanitize(req.body.pointPositionLat);
+    let pLng = sanitize(req.body.pointPositionLng);
+    let pName = sanitize(req.body.pointName);
+    let pAddress = sanitize(req.body.pointAddress);
+    console.log("Adding point : " + pLat + " " + pLng + " " + pName + " " + pAddress);
+
+    mongoose.connect(url, { useNewUrlParser: true }, function(err, db) {
+        if (err) throw err;
+        let park = new Parking({
+            name: pName,
+            address: pAddress,
+            places: "",
+            capacity: "",
+            x: pLng,
+            y: pLat,
+            type: 'customPlace'
+        });
+
+        park.save();
+    });
+
+    res.redirect('/');
 });
 
 app.use(function(req, res, next){
