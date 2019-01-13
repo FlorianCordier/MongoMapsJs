@@ -1,4 +1,7 @@
 # MongoMapsJs
+Maps App create with MongoDB.
+Lists all parkings of Nancy and have the possibility to create a custom point.
+
 ## To start the project, install modules :
 
 ```
