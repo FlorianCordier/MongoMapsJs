@@ -90,7 +90,6 @@ app.post('/addPoint', (req, res) => {
     let pLng = sanitize(req.body.pointPositionLng);
     let pName = sanitize(req.body.pointName);
     let pAddress = sanitize(req.body.pointAddress);
-    console.log("Adding point : " + pLat + " " + pLng + " " + pName + " " + pAddress);
 
     mongoose.connect(url, { useNewUrlParser: true }, function(err, db) {
         if (err) throw err;

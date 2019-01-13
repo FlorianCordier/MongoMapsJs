@@ -16,8 +16,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "nodemon server.js",
-    "scss": "node-sass --output-style compressed --watch ressources/scss --output public/css"
+    "start": "node server.js",
+    "sass": "node-sass --output-style compressed ressources/scss --output public/css"
   },
   "author": "Florian CORDIER",
   "license": "ISC"

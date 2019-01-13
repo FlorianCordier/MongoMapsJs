@@ -40,7 +40,10 @@
             //Creating markers for parking
             data.forEach(function(element) {
                 let markerIcon = "http://maps.google.com/mapfiles/ms/icons/green-dot.png";
-                let infoWindow;
+                let infowindow = new google.maps.InfoWindow({
+                        content: "<h1>" + element.name + "</h1><b>Adresse : </b>" + element.address
+                        + "<br/><b>Capacité totale : </b>" + element.capacity + "<br/><b>Places disponibles : </b>" + element.places
+                    });
 
                 if(element.type == "customPlace"){
                     markerIcon = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
@@ -48,29 +51,24 @@
                         content: "<h1>" + element.name + "</h1><b>Adresse : </b>" + element.address
                         + "<br/><b>Point personnalisé.</b>"
                     });
-                }else{
-                    infowindow = new google.maps.InfoWindow({
-                        content: "<h1>" + element.name + "</h1><b>Adresse : </b>" + element.address
-                        + "<br/><b>Capacité totale : </b>" + element.capacity + "<br/><b>Places disponibles : </b>" + element.places
-                    });
                 }
                 
-                console.log(markerIcon);
                 let marker = new google.maps.Marker({
                     position: {lat:element.y, lng:element.x},
                     map: map,
                     icon : markerIcon,
-                    title: element.name
+                    title : element.name
                 });
 
-                marker.addListener('click', function() {
-                    if(activeInfo){
+                //Attach infowindow to the marker
+                marker.info = infowindow;
+
+                google.maps.event.addListener(marker, 'click', function() {
+                    if(activeInfo != null)
                         activeInfo.close();
-                    }
-                    infowindow.open(map, marker);
-                    activeInfo = infowindow;
+                    marker.info.open(map, marker);
+                    activeInfo = marker.info;
                 });
-
             });
         });
     }
