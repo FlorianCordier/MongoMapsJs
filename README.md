@@ -20,3 +20,5 @@ npm start
 ```
 
 ## Go to localhost:8080 ! 
+
+## CORDIER Florian | ROHRBACHER Léon
