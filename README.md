@@ -28,4 +28,9 @@ npm start
 
 ## Go to localhost:8080
 
+## Test :
+
+Go to localhost:8080, click on some point to see informations.
+Type data of a custom point (copy/paste the sample) and click on the button to add the new point to the database and to the maps.
+
 ## CORDIER Florian | ROHRBACHER Léon
