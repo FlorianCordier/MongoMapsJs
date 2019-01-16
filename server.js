@@ -19,6 +19,7 @@ if(config.app.mode == 'dev'){
 }
 
 //MONGODB DATABASE
+//Create Schema for parking
 let parkingSchema = new mongoose.Schema({
     name: String,
     address: String,
