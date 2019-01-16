@@ -1,0 +1,40 @@
+LIEN : https://github.com/FlorianCordier/MongoMapsJs/
+
+# MongoMapsJs
+Maps App create with MongoDB.
+Cette application permet d'afficher les parkings de Nancy, ainsi que les places disponible et
+leur adresses. Elle permet également de créer des points personnalisés.
+
+## 1. To start the project, install modules :
+
+```
+npm install
+```
+
+## 2. Start the docker with MongoDB
+
+```
+docker run -d -t -i -p27017:27017 mongo
+```
+
+## 3. Compile the cs
+
+```
+npm run sass
+```
+
+## 3. Start the server
+
+```
+npm start
+```
+
+## Go to localhost:8080
+
+## Test :
+Se connecter à localhost:8080
+Cliquer sur certains points pour en voir les données.
+Renseigner les données d'un point personnalisés (ou copier les données d'exemple) et 
+cliquer sur le bouton pour ajouter ce point à la base de données et à la map.
+
+## CORDIER Florian | ROHRBACHER Léon
